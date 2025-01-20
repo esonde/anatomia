@@ -1,7 +1,7 @@
 // Variabili globali
 let allCards = [];              // Array dei dati delle flashcard
 let currentBatchIndex = 0;      // Indice del batch per lazy loading
-const BATCH_SIZE = 2;           // Numero di flashcard da caricare per volta (modifica a piacere)
+const BATCH_SIZE = 50;           // Numero di flashcard da caricare per volta (modifica a piacere)
 let showOnlyDifficult = false;  // Stato per mostrare solo le carte difficili
 let difficultCards = new Set(); // Set degli ID contrassegnati come "difficili"
 
