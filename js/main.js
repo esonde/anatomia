@@ -1,7 +1,7 @@
 // Variabili globali
 let allCards = [];              // Array dei dati delle flashcard
 let currentBatchIndex = 0;      // Indice del batch per lazy loading
-const BATCH_SIZE = 50;           // Numero di flashcard da caricare per volta (modifica a piacere)
+const BATCH_SIZE = 20;          // Numero di flashcard da caricare per volta
 let showOnlyDifficult = false;  // Stato per mostrare solo le carte difficili
 let difficultCards = new Set(); // Set degli ID contrassegnati come "difficili"
 
@@ -117,6 +117,7 @@ function createCardElement(cardData) {
   card.appendChild(starIcon);
   
   card.addEventListener("click", (e) => {
+    // Se clicco sulla stella, non voglio togglare il nome
     if (e.target === starIcon) return;
     card.classList.toggle("show-name");
     console.log("Toggle nome per la card:", cardData.folderName);
@@ -150,6 +151,7 @@ function toggleDifficult(cardId, iconElement) {
  * Configura l'Intersection Observer per il lazy loading
  */
 function setupIntersectionObserver() {
+  // Creiamo un elemento sentinella in fondo al container
   const sentinel = document.createElement('div');
   sentinel.style.height = "1px";
   container.appendChild(sentinel);
@@ -172,12 +174,14 @@ function setupIntersectionObserver() {
  * Eventi per i pulsanti "Rimescola" e "Mostra solo carte difficili"
  */
 shuffleBtn.addEventListener('click', () => {
+  // Se stiamo mostrando solo difficili, rimescola solo quelle
   if (showOnlyDifficult) {
     const diffArray = allCards.filter(card => difficultCards.has(card.id));
     shuffleArray(diffArray);
     container.innerHTML = "";
     currentBatchIndex = 0;
     const nonDiffArray = allCards.filter(card => !difficultCards.has(card.id));
+    // Riunisci prima le difficili rimescolate poi le altre
     allCards = diffArray.concat(nonDiffArray);
     console.log("Carte difficili mescolate:", diffArray);
     loadNextBatch();

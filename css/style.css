@@ -4,17 +4,30 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+/* Impostazioni per il body e il layout di base */
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f2f3f8;
   color: #333;
-  padding: 20px;
+  /* Aggiungo un padding in basso per distanziare eventualmente l'ultimo elemento */
+  padding-bottom: 40px; 
+}
+
+/* HEADER STICKY */
+.header-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 999; /* Per stare sopra alle card quando si scrolla */
+  background-color: #f2f3f8; 
+  padding: 10px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Titolo */
-h1 {
+.header-sticky h1 {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   font-weight: 600;
   font-size: 24px;
 }
@@ -25,7 +38,7 @@ h1 {
   justify-content: center;
   align-items: center;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 .top-buttons button {
   padding: 10px 15px;
@@ -35,10 +48,12 @@ h1 {
   cursor: pointer;
   background: #1976d2;
   color: #fff;
-  transition: background 0.3s;
+  transition: background 0.3s, transform 0.2s;
+  outline: none;
 }
 .top-buttons button:hover {
   background: #145a9e;
+  transform: scale(1.02);
 }
 
 /* Contenitore delle card (griglia) */
@@ -47,7 +62,8 @@ h1 {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 24px;
   max-width: 1400px;
-  margin: 0 auto;
+  margin: 20px auto; /* margin-top per distanziare dal header sticky */
+  padding: 0 10px;   /* Piccolo padding orizzontale per device stretti */
 }
 
 /* Card singola */
@@ -88,6 +104,7 @@ h1 {
   text-align: center;
   opacity: 0;
   transition: opacity 0.3s;
+  font-weight: 500;
 }
 
 /* Stato "show-name": immagine sfumata e titolo visibile */
@@ -103,10 +120,11 @@ h1 {
   position: absolute;
   top: 8px;
   right: 8px;
-  font-size: 28px;
+  font-size: 32px; /* Aumenta la dimensione della stella */
   color: #ccc;
   z-index: 10;
   transition: color 0.3s;
+  cursor: pointer;
 }
 .difficult-icon.marked {
   color: #f44336;
@@ -121,18 +139,18 @@ h1 {
 
 /* Responsive per dispositivi piccoli */
 @media (max-width: 480px) {
-  h1 {
+  .header-sticky h1 {
     font-size: 20px;
   }
   .top-buttons button {
-    font-size: 12px;
+    font-size: 13px;
     padding: 8px;
   }
   .card {
     border-radius: 4px;
   }
   .difficult-icon {
-    font-size: 24px;
+    font-size: 28px; /* leggermente ridotto su schermi piccoli */
   }
 }
 
