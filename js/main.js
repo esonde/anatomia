@@ -13,6 +13,7 @@ if (savedDifficult) {
 
 // Riferimenti agli elementi del DOM
 const container = document.getElementById("cardsContainer");
+const sentinel = document.getElementById("sentinel");
 const shuffleBtn = document.getElementById("shuffleBtn");
 const toggleDifficultBtn = document.getElementById("toggleDifficultBtn");
 const loadingMessage = document.getElementById("loadingMessage");
@@ -25,7 +26,6 @@ fetch('cards.json')
   .then(data => {
     console.log("Dati flashcard caricati:", data.cards);
     allCards = data.cards;
-    // Mescola le flashcard
     shuffleArray(allCards);
     loadNextBatch();
     setupIntersectionObserver();
@@ -49,12 +49,10 @@ function shuffleArray(array) {
  * Carica il prossimo batch di flashcard nel DOM
  */
 function loadNextBatch() {
-  // Se showOnlyDifficult è true, filtriamo le carte che sono nel set "difficultCards"
   const sourceArray = showOnlyDifficult 
     ? allCards.filter(card => difficultCards.has(card.id))
     : allCards;
 
-  // Se abbiamo già caricato tutte le carte di sourceArray
   if (currentBatchIndex >= sourceArray.length) {
     loadingMessage.textContent = "Hai caricato tutte le carte!";
     console.log("Checkpoint: tutte le carte sono state caricate.");
@@ -66,7 +64,6 @@ function loadNextBatch() {
   let loaded = 0;
   const fragment = document.createDocumentFragment();
 
-  // Carichiamo un batch di dimensione BATCH_SIZE
   while (currentBatchIndex < sourceArray.length && loaded < BATCH_SIZE) {
     const cardData = sourceArray[currentBatchIndex];
     const cardElement = createCardElement(cardData);
@@ -86,7 +83,7 @@ function loadNextBatch() {
 }
 
 /**
- * Crea un elemento "card" e aggiunge log per il caricamento dell'immagine
+ * Crea un elemento "card"
  */
 function createCardElement(cardData) {
   console.log("Creazione card per:", cardData);
@@ -121,15 +118,12 @@ function createCardElement(cardData) {
   card.appendChild(folderNameDiv);
   card.appendChild(starIcon);
   
-  // Gestione del click sulla card (mostra/nasconde il nome)
   card.addEventListener("click", (e) => {
-    // Se clicco sulla stella, non voglio togglare il nome
     if (e.target === starIcon) return;
     card.classList.toggle("show-name");
     console.log("Toggle nome per la card:", cardData.folderName);
   });
   
-  // Gestione del click sulla stella (aggiunge/rimuove dalle difficili)
   starIcon.addEventListener("click", (e) => {
     e.stopPropagation();
     toggleDifficult(cardData.id, starIcon);
@@ -140,7 +134,7 @@ function createCardElement(cardData) {
 }
 
 /**
- * Aggiorna il set "difficili" e salva lo stato in localStorage
+ * Aggiorna il set "difficili" e salva in localStorage
  */
 function toggleDifficult(cardId, iconElement) {
   if (difficultCards.has(cardId)) {
@@ -156,14 +150,9 @@ function toggleDifficult(cardId, iconElement) {
 
 /**
  * Configura l'Intersection Observer per il lazy loading
+ * La sentinella è ora un elemento esterno (id="sentinel")
  */
 function setupIntersectionObserver() {
-  // Creiamo un elemento sentinella in fondo al container
-  const sentinel = document.createElement('div');
-  sentinel.style.height = "1px";
-  container.appendChild(sentinel);
-
-  // Usiamo un rootMargin più ampio per caricare prima di arrivare esattamente in fondo
   const observer = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting) {
       console.log("Sentinella visibile, caricamento nuovo batch...");
@@ -174,7 +163,7 @@ function setupIntersectionObserver() {
     rootMargin: "300px", // carica le card quando la sentinella è entro 300px dal viewport
     threshold: 0
   });
-
+  
   observer.observe(sentinel);
 }
 
@@ -182,14 +171,12 @@ function setupIntersectionObserver() {
  * Eventi per i pulsanti "Rimescola" e "Mostra solo carte difficili"
  */
 shuffleBtn.addEventListener('click', () => {
-  // Se stiamo mostrando solo difficili, rimescola solo quelle
   if (showOnlyDifficult) {
     const diffArray = allCards.filter(card => difficultCards.has(card.id));
     shuffleArray(diffArray);
     container.innerHTML = "";
     currentBatchIndex = 0;
     const nonDiffArray = allCards.filter(card => !difficultCards.has(card.id));
-    // Riunisci prima le difficili rimescolate poi le altre
     allCards = diffArray.concat(nonDiffArray);
     console.log("Carte difficili mescolate:", diffArray);
     loadNextBatch();
