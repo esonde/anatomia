@@ -1,16 +1,7 @@
 // Variabili globali
-let allCards = [];              // Array di oggetti contenenti { id, imageUrl, folderName }
-// Esempio statico di dati: in un'app reale potresti caricarli da un JSON o API
-// Per test puoi usarli in questo modo oppure sostituirli con una richiesta AJAX
-allCards = [
-  { id: '1', imageUrl: 'images/flashcard1.jpg', folderName: 'Flashcard 1' },
-  { id: '2', imageUrl: 'images/flashcard2.jpg', folderName: 'Flashcard 2' },
-  { id: '3', imageUrl: 'images/flashcard3.jpg', folderName: 'Flashcard 3' },
-  // Aggiungi altri oggetti se necessario
-];
-
-let currentBatchIndex = 0;      // Indice per il lazy loading
-const BATCH_SIZE = 2;           // Numero di carte da caricare per volta (modifica a piacere)
+let allCards = [];              // Array dei dati delle flashcard
+let currentBatchIndex = 0;      // Indice del batch per lazy loading
+const BATCH_SIZE = 2;           // Numero di flashcard da caricare per volta (modifica a piacere)
 let showOnlyDifficult = false;  // Stato per mostrare solo le carte difficili
 let difficultCards = new Set(); // Set degli ID contrassegnati come "difficili"
 
@@ -27,6 +18,24 @@ const toggleDifficultBtn = document.getElementById("toggleDifficultBtn");
 const loadingMessage = document.getElementById("loadingMessage");
 
 /**
+ * Carica il file JSON contenente i dati delle flashcard
+ */
+fetch('cards.json')
+  .then(response => response.json())
+  .then(data => {
+    console.log("Dati flashcard caricati:", data.cards);
+    allCards = data.cards;
+    // Mescola le flashcard
+    shuffleArray(allCards);
+    loadNextBatch();
+    setupIntersectionObserver();
+  })
+  .catch(err => {
+    console.error("Errore nel caricamento di cards.json:", err);
+    loadingMessage.textContent = "Errore nel caricamento dei dati.";
+  });
+
+/**
  * Shuffle: algoritmo Fisher-Yates
  */
 function shuffleArray(array) {
@@ -40,7 +49,6 @@ function shuffleArray(array) {
  * Carica il prossimo batch di flashcard nel DOM
  */
 function loadNextBatch() {
-  // Filtra l'array se bisogna mostrare solo le "difficili"
   const sourceArray = showOnlyDifficult 
     ? allCards.filter(card => difficultCards.has(card.id))
     : allCards;
@@ -73,7 +81,7 @@ function loadNextBatch() {
 }
 
 /**
- * Crea un elemento "card" e aggiunge i log per il caricamento dell'immagine
+ * Crea un elemento "card" e aggiunge log per il caricamento dell'immagine
  */
 function createCardElement(cardData) {
   console.log("Creazione card per:", cardData);
@@ -85,7 +93,7 @@ function createCardElement(cardData) {
   img.src = cardData.imageUrl;
   img.alt = cardData.folderName;
   
-  // Log: conferma che l'immagine sia stata caricata o segnala errori
+  // Log sul caricamento dell'immagine
   img.addEventListener("load", () => {
     console.log("Immagine caricata:", cardData.imageUrl);
   });
@@ -108,14 +116,12 @@ function createCardElement(cardData) {
   card.appendChild(folderNameDiv);
   card.appendChild(starIcon);
   
-  // Evento: toggle per mostrare/nascondere il nome della flashcard
   card.addEventListener("click", (e) => {
     if (e.target === starIcon) return;
     card.classList.toggle("show-name");
     console.log("Toggle nome per la card:", cardData.folderName);
   });
   
-  // Evento: toggle per "difficile" sulla stella
   starIcon.addEventListener("click", (e) => {
     e.stopPropagation();
     toggleDifficult(cardData.id, starIcon);
@@ -126,7 +132,7 @@ function createCardElement(cardData) {
 }
 
 /**
- * Aggiorna il set "difficili" e salva il nuovo stato nel localStorage
+ * Aggiorna il set "difficili" e salva lo stato in localStorage
  */
 function toggleDifficult(cardId, iconElement) {
   if (difficultCards.has(cardId)) {
@@ -163,7 +169,7 @@ function setupIntersectionObserver() {
 }
 
 /**
- * Eventi per i pulsanti di rimescolamento e filtro
+ * Eventi per i pulsanti "Rimescola" e "Mostra solo carte difficili"
  */
 shuffleBtn.addEventListener('click', () => {
   if (showOnlyDifficult) {
@@ -173,7 +179,7 @@ shuffleBtn.addEventListener('click', () => {
     currentBatchIndex = 0;
     const nonDiffArray = allCards.filter(card => !difficultCards.has(card.id));
     allCards = diffArray.concat(nonDiffArray);
-    console.log("Carte difficili mescolate.", diffArray);
+    console.log("Carte difficili mescolate:", diffArray);
     loadNextBatch();
   } else {
     shuffleArray(allCards);
@@ -194,7 +200,4 @@ toggleDifficultBtn.addEventListener('click', () => {
   console.log("Modalità solo difficili:", showOnlyDifficult);
   loadNextBatch();
 });
-
-// Se il sito deve caricare i dati da una fonte esterna (es. JSON o API), qui va aggiunto il codice per la richiesta AJAX.
-// In questo esempio usiamo dati statici definiti all'inizio.
 
