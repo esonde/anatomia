@@ -10,7 +10,7 @@ body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f2f3f8;
   color: #333;
-  /* Aggiungo un padding in basso per distanziare eventualmente l'ultimo elemento */
+  /* Piccolo distanziamento finale */
   padding-bottom: 40px; 
 }
 
@@ -64,6 +64,8 @@ body {
   max-width: 1400px;
   margin: 20px auto; /* margin-top per distanziare dal header sticky */
   padding: 0 10px;   /* Piccolo padding orizzontale per device stretti */
+  /* Aggiungo un padding-bottom generoso per consentire al sentinel di entrare nel viewport */
+  padding-bottom: 300px; 
 }
 
 /* Card singola */

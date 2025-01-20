@@ -49,10 +49,12 @@ function shuffleArray(array) {
  * Carica il prossimo batch di flashcard nel DOM
  */
 function loadNextBatch() {
+  // Se showOnlyDifficult è true, filtriamo le carte che sono nel set "difficultCards"
   const sourceArray = showOnlyDifficult 
     ? allCards.filter(card => difficultCards.has(card.id))
     : allCards;
 
+  // Se abbiamo già caricato tutte le carte di sourceArray
   if (currentBatchIndex >= sourceArray.length) {
     loadingMessage.textContent = "Hai caricato tutte le carte!";
     console.log("Checkpoint: tutte le carte sono state caricate.");
@@ -63,6 +65,8 @@ function loadNextBatch() {
 
   let loaded = 0;
   const fragment = document.createDocumentFragment();
+
+  // Carichiamo un batch di dimensione BATCH_SIZE
   while (currentBatchIndex < sourceArray.length && loaded < BATCH_SIZE) {
     const cardData = sourceArray[currentBatchIndex];
     const cardElement = createCardElement(cardData);
@@ -70,6 +74,7 @@ function loadNextBatch() {
     currentBatchIndex++;
     loaded++;
   }
+
   container.appendChild(fragment);
   
   if (currentBatchIndex >= sourceArray.length) {
@@ -116,6 +121,7 @@ function createCardElement(cardData) {
   card.appendChild(folderNameDiv);
   card.appendChild(starIcon);
   
+  // Gestione del click sulla card (mostra/nasconde il nome)
   card.addEventListener("click", (e) => {
     // Se clicco sulla stella, non voglio togglare il nome
     if (e.target === starIcon) return;
@@ -123,6 +129,7 @@ function createCardElement(cardData) {
     console.log("Toggle nome per la card:", cardData.folderName);
   });
   
+  // Gestione del click sulla stella (aggiunge/rimuove dalle difficili)
   starIcon.addEventListener("click", (e) => {
     e.stopPropagation();
     toggleDifficult(cardData.id, starIcon);
@@ -156,6 +163,7 @@ function setupIntersectionObserver() {
   sentinel.style.height = "1px";
   container.appendChild(sentinel);
 
+  // Usiamo un rootMargin più ampio per caricare prima di arrivare esattamente in fondo
   const observer = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting) {
       console.log("Sentinella visibile, caricamento nuovo batch...");
@@ -163,7 +171,7 @@ function setupIntersectionObserver() {
     }
   }, {
     root: null,
-    rootMargin: "200px",
+    rootMargin: "300px", // carica le card quando la sentinella è entro 300px dal viewport
     threshold: 0
   });
 
