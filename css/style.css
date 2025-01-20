@@ -18,18 +18,21 @@ body {
 .header-sticky {
   position: sticky;
   top: 0;
-  z-index: 999; /* Per stare sopra alle card quando si scrolla */
+  z-index: 999; /* Per stare sopra le card quando si scrolla */
   background-color: #f2f3f8; 
   padding: 10px 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Titolo */
+/* Titolo (desktop e tablet) */
 .header-sticky h1 {
-  text-align: center;
-  margin-bottom: 10px;
+  display: block;       /* (già di default per <h1>, ma specifico per chiarezza) */
+  width: 100%;          /* Occupare tutta la larghezza */
+  text-align: center;   /* Centrato */
+  margin-bottom: 10px;  /* Leggero spazio sotto */
   font-weight: 600;
   font-size: 24px;
+  padding: 10px 0;      /* Un po’ di padding verticale */
 }
 
 /* Pulsanti in alto */
@@ -139,20 +142,25 @@ body {
   font-size: 16px;
 }
 
-/* Responsive per dispositivi piccoli */
+/* Responsive per dispositivi piccoli (max 480px) */
 @media (max-width: 480px) {
+  /* Titolo su mobile */
   .header-sticky h1 {
-    font-size: 20px;
+    font-size: 22px;      /* più grande se vuoi, ma ad es. 22px è un buon compromesso */
+    margin-bottom: 8px;   /* leggermente ridotto lo spazio */
+    padding: 12px 0;      /* un po’ più di padding */
   }
+  /* Pulsanti su mobile: molto più grandi */
   .top-buttons button {
-    font-size: 13px;
-    padding: 8px;
+    font-size: 18px;
+    padding: 12px 20px;
   }
+  /* Card e stella su mobile */
   .card {
     border-radius: 4px;
   }
   .difficult-icon {
-    font-size: 28px; /* leggermente ridotto su schermi piccoli */
+    font-size: 28px; /* potrebbe restare 32px, ma qui leggermente ridotto */
   }
 }
 
